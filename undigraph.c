@@ -55,6 +55,10 @@ void DFS(struct Graph graph, int start)
     // TODO
 }
 
+void shortest_path(struct Graph graph, int start) {
+    // TODO
+}
+
 int main(int argc, char *argv[])
 {
     struct Graph *graph = (struct Graph *)malloc(sizeof(struct Graph));
@@ -96,6 +100,11 @@ int main(int argc, char *argv[])
     printf("DFS:\n");
     printf("--------------------\n");
     DFS(*graph, 0);
+    printf("--------------------\n\n\n");
+
+    printf("Shortest path:\n");
+    printf("--------------------\n");
+    shortest_path(*graph, 0);
     printf("--------------------\n\n\n");
 
     // struct Stack *stack = (struct Stack *)malloc(sizeof(struct Stack));
