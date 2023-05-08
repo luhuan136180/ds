@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define INF 99999
 
 struct Graph
 {
@@ -13,50 +14,128 @@ struct Stack
     int length;
 };
 
-
 void stackPush(struct Stack *stack, int i)
 {
-    // TODO
+    stack->data[stack->length++] = i;
 }
 
 int stackPop(struct Stack *stack)
 {
-    // TODO
+    return stack->data[--stack->length];
 }
 
 struct Queue
 {
     int *queue;
     int length;
+    int head;
 };
 
 void queueAdd(struct Queue *queue, int i)
 {
-    // TODO
+    queue->queue[queue->length++] = i;
 }
 
 int queueShift(struct Queue *queue)
 {
-    // TODO
+    return queue->queue[queue->head++];
 }
 
 void addEdge(struct Graph *graph, int i, int j)
 {
-    // TDOO
+    graph->edges[i][j] = 1;
+    graph->edges[j][i] = 1;
 }
 
 void BFS(struct Graph graph, int start)
 {
-    // TODO
+    struct Queue *queue = (struct Queue *)malloc(sizeof(struct Queue));
+    queue->queue = (int *)malloc(sizeof(int) * graph.vertexNum);
+    queue->length = queue->head = 0;
+    int *visited = (int *)malloc(sizeof(int) * graph.vertexNum);
+    for (int i = 0; i < graph.vertexNum; i++){
+        visited[i] = 0;
+    }
+    queueAdd(queue, start);
+    visited[start] = 1;
+    while (queue->head < queue->length){
+        int cur = queueShift(queue);
+        printf("%d ", cur);
+        for (int i = 0; i < graph.vertexNum; i++){
+            if (graph.edges[cur][i] && !visited[i]){
+                visited[i] = 1;
+                queueAdd(queue, i);
+            }
+        }
+    }
+    free(queue->queue);
+    free(queue);
+    free(visited);
 }
 
-void DFS(struct Graph graph, int start)
+void DFS_helper(struct Graph graph, int cur, int *visited)
 {
-    // TODO
+    visited[cur] = 1;
+    printf("%d ", cur);
+    for (int i = 0; i < graph.vertexNum; i++){
+        if (graph.edges[cur][i] && !visited[i]){
+            DFS_helper(graph, i, visited);
+        }
+    }
 }
 
-void shortest_path(struct Graph graph, int start) {
-    // TODO
+void DFS(struct Graph graph, int start){
+    int *visited = (int *)malloc(sizeof(int) * graph.vertexNum);
+    for (int i = 0; i < graph.vertexNum; i++){
+        visited[i] = 0;
+    }
+    DFS_helper(graph, start, visited);
+    free(visited);
+}
+
+void shortest_path(struct Graph graph, int start)
+{
+    int *dist = (int *)malloc(sizeof(int) * graph.vertexNum);
+    int *visited = (int *)malloc(sizeof(int) * graph.vertexNum);
+    for (int i = 0; i < graph.vertexNum; i++){
+        dist[i] = INF;
+        visited[i] = 0;
+    }
+    dist[start] = 0;
+    visited[start] = 1;
+    for (int i = 0; i < graph.vertexNum; i++){
+        if (graph.edges[start][i]){
+            dist[i] = 1;
+        }
+    }
+    for (int i = 0; i < graph.vertexNum; i++){
+        int mind = INF;
+        int minidx = -1;
+        for (int j = 0; j < graph.vertexNum; j++){
+            if (!visited[j] && dist[j] < mind){
+                mind = dist[j];
+                minidx = j;
+            }
+        }
+        if (minidx == -1){
+            break;
+        }
+        visited[minidx] = 1;
+        for (int j = 0; j < graph.vertexNum; j++){
+            if (!visited[j] && graph.edges[minidx][j]){
+                if (dist[j] > dist[minidx] + 1){
+                    dist[j] = dist[minidx] + 1;
+                }
+            }
+        }
+    }
+    printf("起点为 %d 的最短路径：\n", start);
+    for (int i = 0; i < graph.vertexNum; i++){
+        printf("%d -> %d : %d\n", start, i, dist[i]);
+    }
+    
+    free(dist);
+    free(visited);
 }
 
 int main(int argc, char *argv[])
